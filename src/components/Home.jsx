@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import MyNavbar from "./NavBar";
-import "./Home.css"; // Importa un file di stile CSS per applicare le modifiche
+import "./Home.css";
+import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
 
 const Home = () => {
   const [gameOfThronesMovies, setGameOfThronesMovies] = useState([]);
   const [animatedMovies, setAnimatedMovies] = useState([]);
   const [randomMovies, setRandomMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [numColumns, setNumColumns] = useState(6); // Numero di colonne predefinito
-  const apiKey = "194f0009";
+  const [numColumns, setNumColumns] = useState(6);
+  const [apiKey] = useState("194f0009");
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [reviewData, setReviewData] = useState({ name: "", comment: "", rating: 1 });
 
   useEffect(() => {
     const fetchMovies = async (url, setStateFunction) => {
@@ -55,7 +65,7 @@ const Home = () => {
       const data = await response.json();
       if (data.Response === "True") {
         setSearchResults(data.Search || []);
-        setNumColumns(10);
+        setNumColumns(5);
       } else {
         console.error("Error in API response:", data.Error);
         setSearchResults([]);
@@ -69,8 +79,22 @@ const Home = () => {
   };
 
   const handleGenreClick = (genre) => {
-    // Implementa la logica per il click sul genere
     console.log(`Genre clicked: ${genre}`);
+  };
+
+  const handleOpenModal = (movie) => {
+    setSelectedMovie(movie);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setReviewData({ name: "", comment: "", rating: 1 });
+  };
+
+  const handleReviewSubmit = () => {
+    console.log("Review submitted:", reviewData);
+    handleCloseModal();
   };
 
   return (
@@ -78,46 +102,17 @@ const Home = () => {
       <MyNavbar onSearch={handleSearch} />
 
       <div className="d-flex">
-        <h2 className="mb-4">TV Shows</h2>
-        <div className="dropdown ml-4 mt-1">
-          <button
-            className="btn btn-secondary btn-sm dropdown-toggle rounded-0 text-white dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-            style={{ backgroundColor: "#221f1f" }}
-          >
-            Genres &nbsp;
-          </button>
-          <div
-            className="dropdown-menu bg-dark"
-            aria-labelledby="dropdownMenuButton"
-          >
-            <a
-              className="dropdown-item text-white bg-dark"
-              href="#"
-              onClick={() => handleGenreClick("Comedy")}
-            >
-              Comedy
-            </a>
-            <a
-              className="dropdown-item text-white bg-dark"
-              href="#"
-              onClick={() => handleGenreClick("Drama")}
-            >
-              Drama
-            </a>
-            <a
-              className="dropdown-item text-white bg-dark"
-              href="#"
-              onClick={() => handleGenreClick("Thriller")}
-            >
-              Thriller
-            </a>
-          </div>
-        </div>
+        <h2 className="align-self-center">TV Shows</h2>
+        <DropdownButton
+          as={ButtonGroup}
+          title="Genres"
+          id="bg-vertical-dropdown-1"
+          className="p-3"
+          variant="secondary" 
+        >
+          <Dropdown.Item eventKey="1">Dropdown link</Dropdown.Item>
+          <Dropdown.Item eventKey="2">Dropdown link</Dropdown.Item>
+        </DropdownButton>
       </div>
 
       {searchResults.length > 0 && (
@@ -132,6 +127,7 @@ const Home = () => {
                 className={`col-md-${
                   12 / numColumns
                 } mb-2 px-1 movie-container`}
+                onClick={() => handleOpenModal(movie)}
               >
                 <img
                   className="img-fluid movie-poster"
@@ -149,7 +145,11 @@ const Home = () => {
           <h4 className="text-white">Star Wars</h4>
           <div className="row row-cols-1 row-cols-md-5 text-center">
             {gameOfThronesMovies.map((movie) => (
-              <div key={movie.imdbID} className="col-md-2 movie-container">
+              <div
+                key={movie.imdbID}
+                className="col-md-2 movie-container"
+                onClick={() => handleOpenModal(movie)}
+              >
                 <img
                   className="img-fluid movie-poster"
                   src={movie.Poster}
@@ -166,7 +166,11 @@ const Home = () => {
           <h4 className="text-white">Animated Movies</h4>
           <div className="row row-cols-1 row-cols-md-5 mb-4 text-center">
             {animatedMovies.map((movie) => (
-              <div key={movie.imdbID} className="col-md-2 movie-container">
+              <div
+                key={movie.imdbID}
+                className="col-md-2 movie-container"
+                onClick={() => handleOpenModal(movie)}
+              >
                 <img
                   className="img-fluid movie-poster"
                   src={movie.Poster}
@@ -183,7 +187,11 @@ const Home = () => {
           <h4 className="text-white">Random Movies</h4>
           <div className="row row-cols-1 row-cols-md-5 ">
             {randomMovies.map((movie) => (
-              <div key={movie.imdbID} className="col-md-2 movie-container">
+              <div
+                key={movie.imdbID}
+                className="col-md-2 movie-container"
+                onClick={() => handleOpenModal(movie)}
+              >
                 <img
                   className="img-fluid movie-poster"
                   src={movie.Poster}
@@ -194,6 +202,57 @@ const Home = () => {
           </div>
         </>
       )}
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Leave a Review for {selectedMovie?.Title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formName">
+              <Form.Label>il tuo nome</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                value={reviewData.name}
+                onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formComment">
+              <Form.Label>Commento</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter your comment"
+                value={reviewData.comment}
+                onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formRating">
+              <Form.Label>Voto</Form.Label>
+              <Form.Control
+                as="select"
+                value={reviewData.rating}
+                onChange={(e) => setReviewData({ ...reviewData, rating: parseInt(e.target.value) })}
+              >
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <option key={rating} value={rating}>
+                    {rating}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Chiudi
+          </Button>
+          <Button variant="primary" onClick={handleReviewSubmit}>
+            Invia
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
