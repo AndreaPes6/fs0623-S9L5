@@ -15,10 +15,14 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [numColumns, setNumColumns] = useState(6);
   const [apiKey] = useState("194f0009");
-
   const [showModal, setShowModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [reviewData, setReviewData] = useState({ name: "", comment: "", rating: 1 });
+  const [reviewData, setReviewData] = useState({
+    name: "",
+    comment: "",
+    rating: 1,
+  });
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const fetchMovies = async (url, setStateFunction) => {
@@ -52,6 +56,36 @@ const Home = () => {
     );
   }, [apiKey]);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        if (!selectedMovie || !selectedMovie.imdbID || !showModal) {
+          return;
+        }
+
+        const response = await fetch(
+          `https://striveschool-api.herokuapp.com/api/comments/${selectedMovie?.imdbID}`,
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg1OTUxNmI5ODkwODAwMTg0ODg3NjgiLCJpYXQiOjE3MDMyNTMyNzEsImV4cCI6MTcwNDQ2Mjg3MX0.4wpQLi-LI0cvUGxVGNN8j6hG_W64EEGvLJukGExTnJQ`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data);
+        } else {
+          console.error("Error fetching reviews:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, [selectedMovie, showModal]);
+
   const handleSearch = async (searchTerm) => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
@@ -78,10 +112,6 @@ const Home = () => {
     }
   };
 
-  const handleGenreClick = (genre) => {
-    console.log(`Genre clicked: ${genre}`);
-  };
-
   const handleOpenModal = (movie) => {
     setSelectedMovie(movie);
     setShowModal(true);
@@ -92,9 +122,29 @@ const Home = () => {
     setReviewData({ name: "", comment: "", rating: 1 });
   };
 
-  const handleReviewSubmit = () => {
-    console.log("Review submitted:", reviewData);
-    handleCloseModal();
+  const handleReviewSubmit = async () => {
+    try {
+      const response = await fetch(
+        `https://striveschool-api.herokuapp.com/api/comments/${selectedMovie?.imdbID}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg1OTUxNmI5ODkwODAwMTg0ODg3NjgiLCJpYXQiOjE3MDMyNTMyNzEsImV4cCI6MTcwNDQ2Mjg3MX0.4wpQLi-LI0cvUGxVGNN8j6hG_W64EEGvLJukGExTnJQ`,
+          },
+          body: JSON.stringify(reviewData),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Review submitted successfully");
+        handleCloseModal();
+      } else {
+        console.error("Error submitting review:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
   };
 
   return (
@@ -103,15 +153,12 @@ const Home = () => {
 
       <div className="d-flex">
         <h2 className="align-self-center">TV Shows</h2>
-        <DropdownButton
-          as={ButtonGroup}
-          title="Genres"
-          id="bg-vertical-dropdown-1"
-          className="p-3"
-          variant="secondary" 
-        >
-          <Dropdown.Item eventKey="1">Dropdown link</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Dropdown link</Dropdown.Item>
+        <DropdownButton as={ButtonGroup} title="Genres" id="bg-vertical-dropdown-1" className="p-3" variant="secondary">
+          <Dropdown.Item eventKey="1">horror</Dropdown.Item>
+          <Dropdown.Item eventKey="2">Azione</Dropdown.Item>
+          <Dropdown.Item eventKey="3">Romantici</Dropdown.Item>
+          <Dropdown.Item eventKey="4">Animazione</Dropdown.Item>
+          <Dropdown.Item eventKey="5">Adattamenti</Dropdown.Item>
         </DropdownButton>
       </div>
 
@@ -124,9 +171,7 @@ const Home = () => {
             {searchResults.map((movie) => (
               <div
                 key={movie.imdbID}
-                className={`col-md-${
-                  12 / numColumns
-                } mb-2 px-1 movie-container`}
+                className={`col-md-${12 / numColumns} mb-2 px-1 movie-container`}
                 onClick={() => handleOpenModal(movie)}
               >
                 <img
@@ -210,12 +255,14 @@ const Home = () => {
         <Modal.Body>
           <Form>
             <Form.Group controlId="formName">
-              <Form.Label>il tuo nome</Form.Label>
+              <Form.Label>Il tuo nome</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your name"
+                placeholder="inserisci il tuo nome"
                 value={reviewData.name}
-                onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+                onChange={(e) =>
+                  setReviewData({ ...reviewData, name: e.target.value })
+                }
               />
             </Form.Group>
             <Form.Group controlId="formComment">
@@ -223,17 +270,24 @@ const Home = () => {
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Enter your comment"
+                placeholder="Inserisci il tuo commento "
                 value={reviewData.comment}
-                onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+                onChange={(e) =>
+                  setReviewData({ ...reviewData, comment: e.target.value })
+                }
               />
             </Form.Group>
             <Form.Group controlId="formRating">
-              <Form.Label>Voto</Form.Label>
+              <Form.Label>Votazioni</Form.Label>
               <Form.Control
                 as="select"
                 value={reviewData.rating}
-                onChange={(e) => setReviewData({ ...reviewData, rating: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setReviewData({
+                    ...reviewData,
+                    rating: parseInt(e.target.value),
+                  })
+                }
               >
                 {[1, 2, 3, 4, 5].map((rating) => (
                   <option key={rating} value={rating}>
@@ -243,13 +297,27 @@ const Home = () => {
               </Form.Control>
             </Form.Group>
           </Form>
+
+          {reviews.length > 0 && showModal && (
+            <div>
+              <h5>Existing Reviews</h5>
+              <ul>
+                {reviews.map((review) => (
+                  <li key={review._id}>
+                    <strong>{review.name}:</strong> {review.comment} (Rating:{" "}
+                    {review.rating})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Chiudi
           </Button>
           <Button variant="primary" onClick={handleReviewSubmit}>
-            Invia
+            Lascia la tua recensione
           </Button>
         </Modal.Footer>
       </Modal>
