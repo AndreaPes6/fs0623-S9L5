@@ -1,0 +1,18 @@
+/* Home.css */
+.movie-container {
+    transition: transform 0.14s ease-in-out;
+  }
+  
+  .movie-container:hover {
+    filter: brightness(1.09);
+    transform: scale(1.05);
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .movie-poster {
+    width: 20rem;
+    height: 20rem;
+    margin: 0.5rem;
+  }
+  

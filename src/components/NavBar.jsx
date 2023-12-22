@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -9,15 +10,32 @@ import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import immagine from './assets/netflix_logo.png';
 
-function MyNavbar() {
+function MyNavbar({ onSearch }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = () => {
+    onSearch(searchTerm);
+    setSearchTerm('');
+  };
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <Navbar expand="lg" className="bg-dark navbar-dark">
       <Container fluid>
         <Navbar.Brand href="#" className="ms-auto">
           <Image src={immagine} fluid style={{ maxWidth: '5em'}} />
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="navbarScroll"/>
-        <Navbar.Collapse id="navbarScroll" className="justify-content-between"> 
+        <Navbar.Toggle aria-controls="navbarScroll" />
+        <Navbar.Collapse id="navbarScroll" className="justify-content-between">
           <Nav
             className="me-auto my-2 my-lg-0"
             style={{ maxHeight: '100px' }}
@@ -35,8 +53,13 @@ function MyNavbar() {
               placeholder="Search"
               className="me-2"
               aria-label="Search"
+              value={searchTerm}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
             />
-            <Button variant="outline-info" className="text-light">Search</Button>
+            <Button variant="outline-info" className="text-light" onClick={handleSearch}>
+              Search
+            </Button>
             <FontAwesomeIcon icon={faBell} className="text-light mx-2" />
             <FontAwesomeIcon icon={faUser} className="text-light mx-2" />
           </Form>

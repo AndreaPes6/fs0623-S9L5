@@ -14,7 +14,7 @@ const MyFooter = () => {
                 <FontAwesomeIcon icon={faFacebook} className="footer-icon text-white" alt="Facebook"/>
                 <FontAwesomeIcon icon={faInstagram} className="footer-icon text-white" alt="Instagram"/>
                 <FontAwesomeIcon icon={faTwitter} className="footer-icon text-white" alt="Twitter"/>
-                <FontAwesomeIcon icon={faYoutube} className="footer-icon text-white" alt="YouTube"/>
+                <FontAwesomeIcon  icon={faYoutube} className="footer-icon text-white" alt="YouTube"/>
               </Col>
             </Row>
             <Row className="row-cols-1 row-cols-sm-2 row-cols-md-4">
