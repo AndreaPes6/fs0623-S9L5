@@ -8,13 +8,13 @@ const MyFooter = () => {
     <footer className="bg-dark">
       <Container>
         <Row className="text-center mt-5 ">
-          <Col md={{ span: 6, offset: 3 }}>
+          <Col>
             <Row>
               <Col xs={12} className="text-left mb-2">
-                <FontAwesomeIcon icon={faFacebook} className="footer-icon text-white" alt="Facebook"/>
-                <FontAwesomeIcon icon={faInstagram} className="footer-icon text-white" alt="Instagram"/>
-                <FontAwesomeIcon icon={faTwitter} className="footer-icon text-white" alt="Twitter"/>
-                <FontAwesomeIcon  icon={faYoutube} className="footer-icon text-white" alt="YouTube"/>
+                <FontAwesomeIcon icon={faFacebook} className="footer-icon text-white mx-2" alt="Facebook"/>
+                <FontAwesomeIcon icon={faInstagram} className="footer-icon text-white mx-2" alt="Instagram"/>
+                <FontAwesomeIcon icon={faTwitter} className="footer-icon text-white mx-2" alt="Twitter"/>
+                <FontAwesomeIcon  icon={faYoutube} className="footer-icon text-white mx-2" alt="YouTube"/>
               </Col>
             </Row>
             <Row className="row-cols-1 row-cols-sm-2 row-cols-md-4">

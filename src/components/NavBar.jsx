@@ -32,7 +32,7 @@ function MyNavbar({ onSearch }) {
     <Navbar expand="lg" className="bg-dark navbar-dark">
       <Container fluid>
         <Navbar.Brand href="#" className="ms-auto">
-          <Image src={immagine} fluid style={{ maxWidth: '5em'}} />
+          <a href='http://localhost:3000/?#'><Image src={immagine} fluid style={{ maxWidth: '5em'}} /></a>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-between">
@@ -43,9 +43,9 @@ function MyNavbar({ onSearch }) {
           >
             <Nav.Link href="#action1" className="text-light">Home</Nav.Link>
             <Nav.Link href="#action2" className="text-light">TV shows</Nav.Link>
-            <Nav.Link href="#action2" className="text-light">Movies</Nav.Link>
-            <Nav.Link href="#action2" className="text-light">Recently added</Nav.Link>
-            <Nav.Link href="#action2" className="text-light">My list</Nav.Link>
+            <Nav.Link href="#action3" className="text-light">Movies</Nav.Link>
+            <Nav.Link href="#action4" className="text-light">Recently added</Nav.Link>
+            <Nav.Link href="#action5" className="text-light">My list</Nav.Link>
           </Nav>
           <Form className="d-flex align-items-center">
             <Form.Control
